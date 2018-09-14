@@ -1,300 +1,325 @@
 package teamweek
 
 import (
-	"fmt"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"reflect"
 	"testing"
 )
 
 var (
 	client *Client
-	mux    *http.ServeMux
-	server *httptest.Server
+	// mux    *http.ServeMux
+	// server *httptest.Server
 )
 
-func setup() {
-	client = NewClient(nil)
-	mux = http.NewServeMux()
-	server = httptest.NewServer(mux)
-	url, _ := url.Parse(server.URL)
-	client.BaseURL = url
+func TestMain(m *testing.M) {
+	// 	secret := os.Getenv("TEAMWEEK_ACCESS_TOKEN")
+	// 	key := os.Getenv("TEAMWEEK_KEY")
+
+	// 	if secret == "" || key == "" {
+	// 		fmt.Println(`
+	// To run the tests, set the following environment variables:
+	//   - TEAMWEEK_SECRET with the generated secret
+	//   - TEAMWEEK_KEY with the app key
+	// You can generate those at the following url:
+	// https://developers.teamweek.com/applications
+
+	// IMPORTANT: the data associated with the account will be destroyed!
+	// `)
+	// 		os.Exit(1)
+	// 	}
+
+	// 	ctx := context.Background()
+	// 	conf := &oauth2.Config{
+	// 		ClientID:     key,
+	// 		ClientSecret: secret,
+	// 		Endpoint: oauth2.Endpoint{
+	// 			TokenURL: "https://teamweek.com/api/v4/authenticate/token",
+	// 		},
+	// 	}
+	// 	client = NewClient(conf.Client)
+	// 	//client = NewClient()
+	// 	os.Exit(m.Run())
 }
 
-func teardown() {
-	server.Close()
-}
+// func setup() {
+// 	client = NewClient(nil)
+// 	mux = http.NewServeMux()
+// 	server = httptest.NewServer(mux)
+// 	url, _ := url.Parse(server.URL)
+// 	client.BaseURL = url
+// }
 
-func TestNewClient(t *testing.T) {
-	c := NewClient(nil)
+// func teardown() {
+// 	server.Close()
+// }
 
-	if c.BaseURL.String() != defaultBaseURL {
-		t.Errorf("NewClient BaseURL = %v, want %v", c.BaseURL.String(), defaultBaseURL)
-	}
-	if c.UserAgent != userAgent {
-		t.Errorf("NewClient UserAgent = %v, want %v", c.UserAgent, userAgent)
-	}
-}
+// func TestNewClient(t *testing.T) {
+// 	c := NewClient(nil)
 
-func TestListAccounts(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if c.BaseURL.String() != defaultBaseURL {
+// 		t.Errorf("NewClient BaseURL = %v, want %v", c.BaseURL.String(), defaultBaseURL)
+// 	}
+// 	if c.UserAgent != userAgent {
+// 		t.Errorf("NewClient UserAgent = %v, want %v", c.UserAgent, userAgent)
+// 	}
+// }
 
-	mux.HandleFunc("/me/accounts.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `[
- 			{"id":1,"name":"Account 1","is_demo":false},
- 			{"id":2,"name":"Account 2","is_demo":true}
-		]`)
-	})
+// func TestListAccounts(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	accounts, err := client.ListAccounts()
-	if err != nil {
-		t.Errorf("ListAccounts returned error: %v", err)
-	}
+// 	mux.HandleFunc("/me/accounts.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `[
+//  			{"id":1,"name":"Account 1","is_demo":false},
+//  			{"id":2,"name":"Account 2","is_demo":true}
+// 		]`)
+// 	})
 
-	want := []Account{
-		{ID: 1, Name: "Account 1"},
-		{ID: 2, Name: "Account 2", IsDemo: true},
-	}
+// 	accounts, err := client.ListAccounts()
+// 	if err != nil {
+// 		t.Errorf("ListAccounts returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(accounts, want) {
-		t.Errorf("ListAccounts returned %+v, want %+v", accounts, want)
-	}
-}
+// 	want := []Account{
+// 		{ID: 1, Name: "Account 1"},
+// 		{ID: 2, Name: "Account 2", IsDemo: true},
+// 	}
 
-func TestProfile(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if !reflect.DeepEqual(accounts, want) {
+// 		t.Errorf("ListAccounts returned %+v, want %+v", accounts, want)
+// 	}
+// }
 
-	mux.HandleFunc("/me.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{"id":1,"email":"test@teamweek.com"}`)
-	})
+// func TestProfile(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	profile, err := client.Profile()
-	if err != nil {
-		t.Errorf("Profile returned error: %v", err)
-	}
+// 	mux.HandleFunc("/me.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `{"id":1,"email":"test@teamweek.com"}`)
+// 	})
 
-	want := &Profile{ID: 1, Email: "test@teamweek.com"}
+// 	profile, err := client.Profile()
+// 	if err != nil {
+// 		t.Errorf("Profile returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(profile, want) {
-		t.Errorf("Profile returned %+v, want %+v", profile, want)
-	}
-}
+// 	want := &Profile{ID: 1, Email: "test@teamweek.com"}
 
-func TestListAccountUsers(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if !reflect.DeepEqual(profile, want) {
+// 		t.Errorf("Profile returned %+v, want %+v", profile, want)
+// 	}
+// }
 
-	mux.HandleFunc("/1/users.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `[
-			{"id":1,"email":"test1@teamweek.com"},
-			{"id":2,"email":"test2@teamweek.com"}
-		]`)
-	})
+// func TestListAccountUsers(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	users, err := client.ListAccountUsers(1)
-	if err != nil {
-		t.Errorf("ListAccountUsers returned error: %v", err)
-	}
+// 	mux.HandleFunc("/1/users.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `[
+// 			{"id":1,"email":"test1@teamweek.com"},
+// 			{"id":2,"email":"test2@teamweek.com"}
+// 		]`)
+// 	})
 
-	want := []User{
-		{ID: 1, Email: "test1@teamweek.com"},
-		{ID: 2, Email: "test2@teamweek.com"},
-	}
+// 	users, err := client.ListAccountUsers(1)
+// 	if err != nil {
+// 		t.Errorf("ListAccountUsers returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(users, want) {
-		t.Errorf("ListAccountUsers returned %+v, want %+v", users, want)
-	}
-}
+// 	want := []User{
+// 		{ID: 1, Email: "test1@teamweek.com"},
+// 		{ID: 2, Email: "test2@teamweek.com"},
+// 	}
 
-func TestListAccountProjects(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if !reflect.DeepEqual(users, want) {
+// 		t.Errorf("ListAccountUsers returned %+v, want %+v", users, want)
+// 	}
+// }
 
-	mux.HandleFunc("/1/projects.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `[
-			{"id":1,"name":"Showtime"},
-			{"id":2,"name":"Quality time"}
-		]`)
-	})
+// func TestListAccountProjects(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	projects, err := client.ListAccountProjects(1)
-	if err != nil {
-		t.Errorf("ListAccountProjects returned error: %v", err)
-	}
+// 	mux.HandleFunc("/1/projects.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `[
+// 			{"id":1,"name":"Showtime"},
+// 			{"id":2,"name":"Quality time"}
+// 		]`)
+// 	})
 
-	want := []Project{
-		{ID: 1, Name: "Showtime"},
-		{ID: 2, Name: "Quality time"},
-	}
+// 	projects, err := client.ListAccountProjects(1)
+// 	if err != nil {
+// 		t.Errorf("ListAccountProjects returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(projects, want) {
-		t.Errorf("ListAccountProjects returned %+v, want %+v", projects, want)
-	}
-}
+// 	want := []Project{
+// 		{ID: 1, Name: "Showtime"},
+// 		{ID: 2, Name: "Quality time"},
+// 	}
 
-func TestListAccountMilestones(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if !reflect.DeepEqual(projects, want) {
+// 		t.Errorf("ListAccountProjects returned %+v, want %+v", projects, want)
+// 	}
+// }
 
-	mux.HandleFunc("/1/milestones.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `[
-			{"id":1,"name":"End of season 1"},
-			{"id":2,"name":"End of season 2"}
-		]`)
-	})
+// func TestListAccountMilestones(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	milestones, err := client.ListAccountMilestones(1)
-	if err != nil {
-		t.Errorf("ListAccountMilestones returned error: %v", err)
-	}
+// 	mux.HandleFunc("/1/milestones.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `[
+// 			{"id":1,"name":"End of season 1"},
+// 			{"id":2,"name":"End of season 2"}
+// 		]`)
+// 	})
 
-	want := []Milestone{
-		{ID: 1, Name: "End of season 1"},
-		{ID: 2, Name: "End of season 2"},
-	}
+// 	milestones, err := client.ListAccountMilestones(1)
+// 	if err != nil {
+// 		t.Errorf("ListAccountMilestones returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(milestones, want) {
-		t.Errorf("ListAccountMilestones returned %+v, want %+v", milestones, want)
-	}
-}
+// 	want := []Milestone{
+// 		{ID: 1, Name: "End of season 1"},
+// 		{ID: 2, Name: "End of season 2"},
+// 	}
 
-func TestListAccountGroups(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if !reflect.DeepEqual(milestones, want) {
+// 		t.Errorf("ListAccountMilestones returned %+v, want %+v", milestones, want)
+// 	}
+// }
 
-	mux.HandleFunc("/1/groups.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `[
-			{"id":1,"name":"Red Muppets"},
-			{"id":2,"name":"Blue Muppets"}
-		]`)
-	})
+// func TestListAccountGroups(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	groups, err := client.ListAccountGroups(1)
-	if err != nil {
-		t.Errorf("ListAccountGroups returned error: %v", err)
-	}
+// 	mux.HandleFunc("/1/groups.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `[
+// 			{"id":1,"name":"Red Muppets"},
+// 			{"id":2,"name":"Blue Muppets"}
+// 		]`)
+// 	})
 
-	want := []Group{
-		{ID: 1, Name: "Red Muppets"},
-		{ID: 2, Name: "Blue Muppets"},
-	}
+// 	groups, err := client.ListAccountGroups(1)
+// 	if err != nil {
+// 		t.Errorf("ListAccountGroups returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(groups, want) {
-		t.Errorf("ListAccountGroups returned %+v, want %+v", groups, want)
-	}
-}
+// 	want := []Group{
+// 		{ID: 1, Name: "Red Muppets"},
+// 		{ID: 2, Name: "Blue Muppets"},
+// 	}
 
-func TestListAccountTasks(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if !reflect.DeepEqual(groups, want) {
+// 		t.Errorf("ListAccountGroups returned %+v, want %+v", groups, want)
+// 	}
+// }
 
-	mux.HandleFunc("/1/tasks.json", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `[
-			{"id":1,"name":"Act like muppet"},
-			{"id":2,"name":"Lunch with Abby"}
-		]`)
-	})
+// func TestListAccountTasks(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	tasks, err := client.ListAccountTasks(1)
-	if err != nil {
-		t.Errorf("ListAccountTasks returned error: %v", err)
-	}
+// 	mux.HandleFunc("/1/tasks.json", func(w http.ResponseWriter, r *http.Request) {
+// 		fmt.Fprint(w, `[
+// 			{"id":1,"name":"Act like muppet"},
+// 			{"id":2,"name":"Lunch with Abby"}
+// 		]`)
+// 	})
 
-	want := []Task{
-		{ID: 1, Name: "Act like muppet"},
-		{ID: 2, Name: "Lunch with Abby"},
-	}
+// 	tasks, err := client.ListAccountTasks(1)
+// 	if err != nil {
+// 		t.Errorf("ListAccountTasks returned error: %v", err)
+// 	}
 
-	if !reflect.DeepEqual(tasks, want) {
-		t.Errorf("ListAccountTasks returned %+v, want %+v", tasks, want)
-	}
-}
+// 	want := []Task{
+// 		{ID: 1, Name: "Act like muppet"},
+// 		{ID: 2, Name: "Lunch with Abby"},
+// 	}
 
-func TestInvalidURL(t *testing.T) {
-	client = NewClient(nil)
-	err := client.Request("/%s/error", nil)
-	if err == nil {
-		t.Errorf("Expected 'invalid URL escape' error")
-	}
-}
+// 	if !reflect.DeepEqual(tasks, want) {
+// 		t.Errorf("ListAccountTasks returned %+v, want %+v", tasks, want)
+// 	}
+// }
 
-func TestHandleHttpError(t *testing.T) {
-	setup()
-	defer teardown()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Bad Request", 400)
-	})
-	err := client.Request("/", nil)
-	if err == nil {
-		t.Errorf("Expected 'Bad Request' error")
-	}
-}
+// func TestInvalidURL(t *testing.T) {
+// 	client = NewClient(nil)
+// 	err := client.Request("/%s/error", nil)
+// 	if err == nil {
+// 		t.Errorf("Expected 'invalid URL escape' error")
+// 	}
+// }
 
-func TestInvalidNewRequest(t *testing.T) {
-	client = NewClient(nil)
-	client.BaseURL = &url.URL{Host: "%s"}
-	err := client.Request("/", nil)
+// func TestHandleHttpError(t *testing.T) {
+// 	setup()
+// 	defer teardown()
+// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 		http.Error(w, "Bad Request", 400)
+// 	})
+// 	err := client.Request("/", nil)
+// 	if err == nil {
+// 		t.Errorf("Expected 'Bad Request' error")
+// 	}
+// }
 
-	if err == nil {
-		t.Error("Expected error to be returned.")
-	}
-	if err, ok := err.(*url.Error); !ok {
-		t.Errorf("Expected a URL error; got %#v.", err)
-	}
-}
+// func TestInvalidNewRequest(t *testing.T) {
+// 	client = NewClient(nil)
+// 	client.BaseURL = &url.URL{Host: "%s"}
+// 	err := client.Request("/", nil)
 
-func TestHttpClientError(t *testing.T) {
-	client = NewClient(nil)
-	client.BaseURL = &url.URL{}
-	err := client.Request("/", nil)
+// 	if err == nil {
+// 		t.Error("Expected error to be returned.")
+// 	}
+// 	if err, ok := err.(*url.Error); !ok {
+// 		t.Errorf("Expected a URL error; got %#v.", err)
+// 	}
+// }
 
-	if err == nil {
-		t.Error("Expected error to be returned.")
-	}
-	if err, ok := err.(*url.Error); !ok {
-		t.Errorf("Expected a URL error; got %#v.", err)
-	}
-}
+// func TestHttpClientError(t *testing.T) {
+// 	client = NewClient(nil)
+// 	client.BaseURL = &url.URL{}
+// 	err := client.Request("/", nil)
 
-func TestServiceInternalError(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if err == nil {
+// 		t.Error("Expected error to be returned.")
+// 	}
+// 	if err, ok := err.(*url.Error); !ok {
+// 		t.Errorf("Expected a URL error; got %#v.", err)
+// 	}
+// }
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Internal Server Error", 500)
-	})
+// func TestServiceInternalError(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	if err := client.Request("/", nil); err == nil {
-		t.Errorf("Expected 'Internal Server Error'")
-	}
-}
+// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 		http.Error(w, "Internal Server Error", 500)
+// 	})
 
-func TestUnauthorizedError(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if err := client.Request("/", nil); err == nil {
+// 		t.Errorf("Expected 'Internal Server Error'")
+// 	}
+// }
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Unauthorized", 401)
-	})
+// func TestUnauthorizedError(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	if err := client.Request("/", nil); err == nil {
-		t.Errorf("Expected 'Unauthorized'")
-	}
-}
+// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 		http.Error(w, "Unauthorized", 401)
+// 	})
 
-func TestUnexpectedStatus(t *testing.T) {
-	setup()
-	defer teardown()
+// 	if err := client.Request("/", nil); err == nil {
+// 		t.Errorf("Expected 'Unauthorized'")
+// 	}
+// }
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Accepted", 202)
-	})
+// func TestUnexpectedStatus(t *testing.T) {
+// 	setup()
+// 	defer teardown()
 
-	if err := client.Request("/", nil); err == nil {
-		t.Errorf("Expected unexpected status code error")
-	}
-}
+// 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+// 		http.Error(w, "Accepted", 202)
+// 	})
+
+// 	if err := client.Request("/", nil); err == nil {
+// 		t.Errorf("Expected unexpected status code error")
+// 	}
+// }
