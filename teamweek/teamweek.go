@@ -5,19 +5,29 @@ import (
 )
 
 type (
+	Workspace struct {
+		ID          int64  `json:"id,omitempty"`
+		Name        string `json:"name,omitempty"`
+		Active      bool   `json:"active,omitempty"`
+		Role        string `json:"role,omitempty"`
+		SuspendedAt string `json:"suspended_at,omitempty"`
+		CreatedAt   string `json:"created_at,omitempty"`
+		UpdatedAt   string `json:"updated_at,omitempty"`
+	}
+
 	UserProfile struct {
-		ID         int64   `json:"id,omitempty"`
-		Name       string  `json:"name,omitempty"`
-		Email      string  `json:"email,omitempty"`
-		Color      string  `json:"color,omitempty"`
-		ColorID    int64   `json:"color_id,omitempty"`
-		Initials   string  `json:"initials,omitempty"`
-		PictureUrl string  `json:"picture_url,omitempty"`
-		HasPicture bool    `json:"has_picture,omitempty"`
-		Workspaces []int64 `json:"workspaces,omitempty"`
-		ProjectIDs []int64 `json:"project_ids,omitempty`
-		CreatedAt  string  `json:"created_at,omitempty"`
-		UpdatedAt  string  `json:"updated_at,omitempty"`
+		ID         int64       `json:"id,omitempty"`
+		Name       string      `json:"name,omitempty"`
+		Email      string      `json:"email,omitempty"`
+		Color      string      `json:"color,omitempty"`
+		ColorID    int64       `json:"color_id,omitempty"`
+		Initials   string      `json:"initials,omitempty"`
+		PictureUrl string      `json:"picture_url,omitempty"`
+		HasPicture bool        `json:"has_picture,omitempty"`
+		Workspaces []Workspace `json:"workspaces,omitempty"`
+		ProjectIDs []int64     `json:"project_ids,omitempty`
+		CreatedAt  string      `json:"created_at,omitempty"`
+		UpdatedAt  string      `json:"updated_at,omitempty"`
 	}
 
 	Member struct {

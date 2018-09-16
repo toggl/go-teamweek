@@ -38,38 +38,35 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-// func TestListAccounts(t *testing.T) {
-// 	setup()
-// 	defer teardown()
-
-// 	mux.HandleFunc("/me/accounts.json", func(w http.ResponseWriter, r *http.Request) {
-// 		fmt.Fprint(w, `[
-//  			{"id":1,"name":"Account 1","is_demo":false},
-//  			{"id":2,"name":"Account 2","is_demo":true}
-// 		]`)
-// 	})
-
-// 	accounts, err := client.ListAccounts()
-// 	if err != nil {
-// 		t.Errorf("ListAccounts returned error: %v", err)
-// 	}
-
-// 	want := []Account{
-// 		{ID: 1, Name: "Account 1"},
-// 		{ID: 2, Name: "Account 2", IsDemo: true},
-// 	}
-
-// 	if !reflect.DeepEqual(accounts, want) {
-// 		t.Errorf("ListAccounts returned %+v, want %+v", accounts, want)
-// 	}
-// }
-
 func TestUserProfile(t *testing.T) {
 	setup()
 	defer teardown()
 
 	mux.HandleFunc("/me", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{"id":1,"email":"test@teamweek.com"}`)
+		js := `{
+			"workspaces": [{
+				"updated_at": "2018-09-14T07:51:26.463375",
+				"suspended_at": null,
+				"role": "admin",
+				"name": "Choucroute",
+				"id": 42,
+				"custom_colors": [],
+				"created_at": "2018-09-14T07:51:26.463362",
+				"active": true
+			}],
+			"updated_at": "2018-09-14T07:55:47.397289",
+			"project_ids": [],
+			"picture_url": null,
+			"name": "Fred",
+			"manager": true,
+			"invitations": [],
+			"initials": "fr",
+			"id": 123456,
+			"has_picture": false,
+			"email": "frederic@toggl.com",
+			"created_at": "2018-09-14T07:50:22.036305",
+			"color_id": 22}`
+		fmt.Fprint(w, js)
 	})
 
 	profile, err := client.GetUserProfile()
@@ -77,8 +74,23 @@ func TestUserProfile(t *testing.T) {
 		t.Errorf("UserProfile returned error: %v", err)
 	}
 
-	want := &UserProfile{ID: 1, Email: "test@teamweek.com"}
-
+	want := &UserProfile{
+		ID:       123456,
+		Name:     "Fred",
+		Email:    "frederic@toggl.com",
+		ColorID:  22,
+		Initials: "fr",
+		Workspaces: []Workspace{
+			{
+				ID:        42,
+				Name:      "Choucroute",
+				Active:    true,
+				Role:      "admin",
+				CreatedAt: "2018-09-14T07:51:26.463362",
+				UpdatedAt: "2018-09-14T07:51:26.463375"}},
+		CreatedAt: "2018-09-14T07:50:22.036305",
+		UpdatedAt: "2018-09-14T07:55:47.397289",
+	}
 	if !reflect.DeepEqual(profile, want) {
 		t.Errorf("UserProfile returned %+v, want %+v", profile, want)
 	}
