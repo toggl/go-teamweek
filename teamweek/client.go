@@ -15,6 +15,13 @@ const (
 	defaultBaseURL = "https://teamweek.com/api/v4/"
 )
 
+var (
+	ErrInvalidAuth = errors.New("Invalid authorization, check credentials and/or reauthenticate")
+	ErrForbidden   = errors.New("The ressource your are trying to access is beyond the scope of your current user")
+	ErrNotFound    = errors.New("The requested ressource could not be found.")
+	ErrInternal    = errors.New("Teamweek API experienced an internal error. Please try again later.")
+)
+
 type Client struct {
 	client    *http.Client
 	BaseURL   *url.URL
@@ -82,19 +89,19 @@ func handleResponseStatuses(resp *http.Response) error {
 	switch resp.StatusCode {
 
 	case http.StatusUnauthorized: // 401
-		return errors.New("Invalid authorization, check credentials and/or reauthenticate")
+		return ErrInvalidAuth
 
 	case http.StatusForbidden: // 403
-		return errors.New("The ressource your are trying to access is beyond the scope of your current user")
+		return ErrForbidden
 
 	case http.StatusNotFound: // 404
-		return errors.New("The requested ressource could not be found.")
+		return ErrNotFound
 
 	case http.StatusInternalServerError: // 500
-		return errors.New("Teamweek API experienced an internal error. Please try again later.")
+		return ErrInternal
 
 	default:
-		if resp.StatusCode >= 400 {
+		if resp.StatusCode >= 400 { // for every other error
 			return fmt.Errorf("Teamweek API returned an unexpected status code: %d", resp.StatusCode)
 		}
 	}
