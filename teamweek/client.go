@@ -94,7 +94,7 @@ func handleResponseStatuses(resp *http.Response) error {
 		return errors.New("Teamweek API experienced an internal error. Please try again later.")
 
 	default:
-		if resp.StatusCode >= 300 {
+		if resp.StatusCode >= 400 {
 			return fmt.Errorf("Teamweek API returned an unexpected status code: %d", resp.StatusCode)
 		}
 	}

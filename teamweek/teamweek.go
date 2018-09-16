@@ -116,7 +116,7 @@ func (c *Client) ListWorkspaceMembers(workspaceID int64) ([]Member, error) {
 	members := []Member{}
 	url := fmt.Sprintf("%d/members", workspaceID)
 
-	if err := c.get(url, members); err != nil {
+	if err := c.get(url, &members); err != nil {
 		return nil, err
 	}
 	return members, nil
@@ -126,7 +126,7 @@ func (c *Client) ListWorkspaceProjects(workspaceID int64) ([]Project, error) {
 	projects := []Project{}
 	url := fmt.Sprintf("%d/projects", workspaceID)
 
-	if err := c.get(url, projects); err != nil {
+	if err := c.get(url, &projects); err != nil {
 		return nil, err
 	}
 	return projects, nil
@@ -136,7 +136,7 @@ func (c *Client) ListWorkspaceMilestones(workspaceID int64) ([]Milestone, error)
 	milestones := []Milestone{}
 	url := fmt.Sprintf("%d/milestones", workspaceID)
 
-	if err := c.get(url, milestones); err != nil {
+	if err := c.get(url, &milestones); err != nil {
 		return nil, err
 	}
 	return milestones, nil
@@ -146,7 +146,7 @@ func (c *Client) ListWorkspaceGroups(workspaceID int64) ([]Group, error) {
 	groups := []Group{}
 	url := fmt.Sprintf("%d/groups", workspaceID)
 
-	if err := c.get(url, groups); err != nil {
+	if err := c.get(url, &groups); err != nil {
 		return nil, err
 	}
 	return groups, nil
@@ -156,7 +156,7 @@ func (c *Client) ListWorkspaceTasks(workspaceID int64) ([]Task, error) {
 	tasks := []Task{}
 	url := fmt.Sprintf("%d/tasks", workspaceID)
 
-	if err := c.get(url, tasks); err != nil {
+	if err := c.get(url, &tasks); err != nil {
 		return nil, err
 	}
 	return tasks, nil
