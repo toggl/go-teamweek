@@ -54,7 +54,6 @@ func TestUserProfile(t *testing.T) {
 				"active": true
 			}],
 			"updated_at": "2018-09-14T07:55:47.397289",
-			"project_ids": [],
 			"picture_url": null,
 			"name": "Fred",
 			"manager": true,
