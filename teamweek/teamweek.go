@@ -31,8 +31,6 @@ type (
 	Member struct {
 		Role              string `json:"role,omitempty"`
 		Active            bool   `json:"active,omitempty"`
-		Color             string `json:"color,omitempty"`
-		ColorID           int64  `json:"color_id,omitempty"`
 		HoursPerWorkDay   string `json:"hours_per_work_day,omitempty"`
 		MinutesPerWorkDay string `json:"minutes_per_work_day,omitempty"`
 		Dummy             bool   `json:"dummy,omitempty"`
