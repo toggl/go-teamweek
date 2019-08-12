@@ -6,7 +6,7 @@ go-teamweek
 ### Usage ###
 
 ```go
-import "github.com/toggl/go-teamweek/teamweek"
+import "github.com/toggl/go-teamweek"
 ```
 
 Create a new Teamweek client instance, then use provided methods on the client to
