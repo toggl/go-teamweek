@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	libraryVersion = "0.2"
+	libraryVersion = "0.3"
 	userAgent      = "go-teamweek/" + libraryVersion
-	defaultBaseURL = "https://teamweek.com/api/v4/"
+	defaultBaseURL = "https://api.plan.toggl.com/api/v4/"
 )
 
 var (
