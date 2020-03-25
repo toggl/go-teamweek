@@ -1,7 +1,9 @@
 go-teamweek
 ===========
 
-[Go](http://golang.org) library for accessing the [Teamweek API](https://developers.teamweek.com/api-v4.html)
+[Go](http://golang.org) library for accessing the [Toggl.Plan API](https://developers.plan.toggl.com/api-v4.html)
+
+[![CI](https://github.com/toggl/go-teamweek/workflows/CI/badge.svg)](https://github.com/toggl/go-teamweek/actions?query=workflow%3ACI)
 
 ### Usage ###
 
